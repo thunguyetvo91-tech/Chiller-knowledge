@@ -512,7 +512,7 @@ class App {
         );
     }
 
-    saveResults(results) {
+    async saveResults(results){
 
         Utils.saveScore({
 
