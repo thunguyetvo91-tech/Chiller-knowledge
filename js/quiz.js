@@ -1,358 +1,365 @@
 class Quiz {
 
+    constructor() {
 
-constructor() {
+        this.currentQuestionIndex = 0;
+        this.questions = [];
+        this.userAnswers = [];
 
-    this.currentQuestionIndex = 0;
-    this.questions = [];
-    this.userAnswers = [];
+        this.standardPoints = 0;
+        this.bonusPoints = 0;
 
-    this.standardPoints = 0;
-    this.bonusPoints = 0;
+        this.timePerQuestion = 15;
+        this.timeRemaining = 15;
 
-    this.timePerQuestion = 15;
-    this.timeRemaining = this.timePerQuestion;
+        this.timerInterval = null;
+    }
 
-    this.timerInterval = null;
-}
+    loadQuestions(
+        categoryId,
+        data
+    ) {
 
-loadQuestions(categoryId, data) {
-
-    const category =
-        data.categories.find(
-            c => c.id === categoryId
-        );
-
-    if (!category) return false;
-
-    this.questions =
-        Utils.getRandomQuestions(
-            category.questions,
-            10
-        );
-
-    this.questions.forEach(
-        question => {
-
-            question.answers =
-                Utils.shuffleArray(
-                    question.answers
-                );
-        }
-    );
-
-    this.currentCategory =
-        category.name;
-
-    this.userAnswers =
-        new Array(
-            this.questions.length
-        ).fill(null);
-
-    return true;
-}
-
-getCurrentQuestion() {
-
-    return this.questions[
-        this.currentQuestionIndex
-    ];
-}
-
-submitAnswer(selectedAnswers) {
-
-    const question =
-        this.getCurrentQuestion();
-
-    const result =
-        this.checkAnswer(
-            question,
-            selectedAnswers
-        );
-
-    const timeSpent =
-        this.timePerQuestion -
-        this.timeRemaining;
-
-    let bonus = 0;
-
-    if (result.isPerfect) {
-
-        bonus =
-            Utils.generateBonusPoints(
-                this.timeRemaining
+        const category =
+            data.categories.find(
+                c => c.id === categoryId
             );
 
-        this.bonusPoints += bonus;
-    }
+        if (!category)
+            return false;
 
-    this.standardPoints +=
-        result.points;
+        this.questions =
+            Utils.getRandomQuestions(
+                category.questions,
+                10
+            );
 
-    this.userAnswers[
-        this.currentQuestionIndex
-    ] = {
+        this.questions.forEach(
+            question => {
 
-        questionId:
-            question.id,
-
-        selected:
-            selectedAnswers,
-
-        correct:
-            result.isPerfect,
-
-        points:
-            result.points,
-
-        timeSpent,
-
-        bonus
-    };
-
-    return result.isPerfect;
-}
-
-checkAnswer(
-    question,
-    selectedAnswers
-) {
-
-    if (
-        question.type === "single"
-    ) {
-
-        const answer =
-            question.answers[
-                selectedAnswers[0]
-            ];
-
-        const isCorrect =
-            answer &&
-            answer.correct;
-
-        return {
-
-            isPerfect:
-                isCorrect,
-
-            points:
-                isCorrect
-                    ? 10
-                    : 0
-        };
-    }
-
-    if (
-        question.type === "multiple"
-    ) {
-
-        const correctIndexes =
-            question.answers
-                .map(
-                    (
-                        answer,
-                        index
-                    ) =>
-                        answer.correct
-                            ? index
-                            : -1
-                )
-                .filter(
-                    index =>
-                        index !== -1
-                );
-
-        const totalCorrect =
-            correctIndexes.length;
-
-        let correctSelected = 0;
-        let wrongSelected = 0;
-
-        selectedAnswers.forEach(
-            index => {
-
-                if (
-                    question.answers[
-                        index
-                    ]?.correct
-                ) {
-
-                    correctSelected++;
-
-                } else {
-
-                    wrongSelected++;
-                }
+                question.answers =
+                    Utils.shuffleArray(
+                        question.answers
+                    );
             }
         );
 
-        let points =
-            (
-                (
-                    correctSelected -
-                    wrongSelected
-                ) /
-                totalCorrect
-            ) * 10;
+        this.currentCategory =
+            category.name;
 
-        points =
-            Math.max(
-                0,
-                points
-            );
-
-        points =
-            Number(
-                points.toFixed(2)
-            );
-
-        const isPerfect =
-
-            selectedAnswers.length ===
-            totalCorrect &&
-
-            selectedAnswers.every(
-                index =>
-                    correctIndexes.includes(
-                        index
-                    )
-            );
-
-        return {
-
-            isPerfect,
-
-            points
-        };
-    }
-
-    return {
-
-        isPerfect: false,
-
-        points: 0
-    };
-}
-
-nextQuestion() {
-
-    if (
-        this.currentQuestionIndex <
-        this.questions.length - 1
-    ) {
-
-        this.currentQuestionIndex++;
-
-        this.timeRemaining =
-            this.timePerQuestion;
+        this.userAnswers =
+            new Array(
+                this.questions.length
+            ).fill(null);
 
         return true;
     }
 
-    this.currentQuestionIndex++;
+    getCurrentQuestion() {
 
-    return false;
-}
+        return this.questions[
+            this.currentQuestionIndex
+        ];
+    }
 
-startTimer(
-    updateCallback,
-    timeoutCallback
-) {
-
-    this.stopTimer();
-
-    this.timeRemaining =
-        this.timePerQuestion;
-
-    updateCallback(
-        this.timeRemaining
-    );
-
-    this.timerInterval =
-        setInterval(() => {
-
-            this.timeRemaining--;
-
-            updateCallback(
-                this.timeRemaining
-            );
-
-            if (
-                this.timeRemaining <= 0
-            ) {
-
-                this.stopTimer();
-
-                timeoutCallback();
-            }
-
-        }, 1000);
-}
-
-stopTimer() {
-
-    if (
-        this.timerInterval
+    submitAnswer(
+        selectedAnswers
     ) {
 
-        clearInterval(
-            this.timerInterval
+        const question =
+            this.getCurrentQuestion();
+
+        const result =
+            this.checkAnswer(
+                question,
+                selectedAnswers
+            );
+
+        const timeSpent =
+            this.timePerQuestion -
+            this.timeRemaining;
+
+        let bonus = 0;
+
+        if (result.isPerfect) {
+
+            bonus =
+                Utils.generateBonusPoints(
+                    this.timeRemaining
+                );
+
+            this.bonusPoints +=
+                bonus;
+        }
+
+        this.standardPoints +=
+            result.points;
+
+        this.userAnswers[
+            this.currentQuestionIndex
+        ] = {
+
+            questionId:
+                question.id,
+
+            selected:
+                selectedAnswers,
+
+            correct:
+                result.isPerfect,
+
+            points:
+                result.points,
+
+            timeSpent,
+
+            bonus
+        };
+
+        return result.isPerfect;
+    }
+
+    checkAnswer(
+        question,
+        selectedAnswers
+    ) {
+
+        // SINGLE CHOICE
+        if (
+            question.type ===
+            "single"
+        ) {
+
+            const answer =
+                question.answers[
+                    selectedAnswers[0]
+                ];
+
+            const isCorrect =
+                answer &&
+                answer.correct;
+
+            return {
+
+                isPerfect:
+                    isCorrect,
+
+                points:
+                    isCorrect
+                        ? 10
+                        : 0
+            };
+        }
+
+        // MULTIPLE CHOICE
+        if (
+            question.type ===
+            "multiple"
+        ) {
+
+            const correctAnswers =
+                question.answers.filter(
+                    answer =>
+                        answer.correct
+                );
+
+            const totalCorrect =
+                correctAnswers.length;
+
+            let correctSelected = 0;
+            let wrongSelected = 0;
+
+            selectedAnswers.forEach(
+                index => {
+
+                    if (
+                        question.answers[
+                            index
+                        ]?.correct
+                    ) {
+
+                        correctSelected++;
+
+                    } else {
+
+                        wrongSelected++;
+                    }
+                }
+            );
+
+            let points =
+                (
+                    (
+                        correctSelected -
+                        wrongSelected
+                    ) /
+                    totalCorrect
+                ) * 10;
+
+            points =
+                Math.max(
+                    0,
+                    points
+                );
+
+            points =
+                Number(
+                    points.toFixed(2)
+                );
+
+            const correctIndexes =
+                question.answers
+                    .map(
+                        (
+                            answer,
+                            index
+                        ) =>
+                            answer.correct
+                                ? index
+                                : -1
+                    )
+                    .filter(
+                        index =>
+                            index !== -1
+                    );
+
+            const isPerfect =
+                selectedAnswers.length ===
+                totalCorrect &&
+                selectedAnswers.every(
+                    index =>
+                        correctIndexes.includes(
+                            index
+                        )
+                );
+
+            return {
+                isPerfect,
+                points
+            };
+        }
+
+        return {
+            isPerfect: false,
+            points: 0
+        };
+    }
+
+    nextQuestion() {
+
+        if (
+            this.currentQuestionIndex <
+            this.questions.length - 1
+        ) {
+
+            this.currentQuestionIndex++;
+
+            this.timeRemaining =
+                this.timePerQuestion;
+
+            return true;
+        }
+
+        return false;
+    }
+
+    startTimer(
+        updateCallback,
+        timeoutCallback
+    ) {
+
+        this.stopTimer();
+
+        this.timeRemaining =
+            this.timePerQuestion;
+
+        updateCallback(
+            this.timeRemaining
         );
 
-        this.timerInterval = null;
+        this.timerInterval =
+            setInterval(() => {
+
+                this.timeRemaining--;
+
+                updateCallback(
+                    this.timeRemaining
+                );
+
+                if (
+                    this.timeRemaining <= 0
+                ) {
+
+                    this.stopTimer();
+
+                    timeoutCallback();
+                }
+
+            }, 1000);
     }
-}
 
-getCorrectCount() {
+    stopTimer() {
 
-    return this.userAnswers.filter(
-        answer =>
-            answer &&
-            answer.correct
-    ).length;
-}
+        if (
+            this.timerInterval
+        ) {
 
-getResults() {
+            clearInterval(
+                this.timerInterval
+            );
 
-    const correctCount =
-        this.getCorrectCount();
+            this.timerInterval =
+                null;
+        }
+    }
 
-    return {
+    getCorrectCount() {
 
-        correctCount,
+        return this.userAnswers.filter(
+            answer =>
+                answer &&
+                answer.correct
+        ).length;
+    }
 
-        totalQuestions:
-            this.questions.length,
+    getResults() {
 
-        achievementPercentage:
-            Utils.calculateAchievementPercentage(
-                correctCount,
-                this.questions.length
-            ),
+        const correctCount =
+            this.getCorrectCount();
 
-        standardPoints:
-            Number(
-                this.standardPoints.toFixed(
-                    2
-                )
-            ),
+        return {
 
-        bonusPoints:
-            this.bonusPoints,
+            correctCount,
 
-        totalPoints:
-            Number(
-                (
-                    this.standardPoints +
-                    this.bonusPoints
-                ).toFixed(2)
-            ),
+            totalQuestions:
+                this.questions.length,
 
-        answers:
-            this.userAnswers
-    };
-}
+            achievementPercentage:
+                Utils.calculateAchievementPercentage(
+                    correctCount,
+                    this.questions.length
+                ),
 
+            standardPoints:
+                Number(
+                    this.standardPoints.toFixed(
+                        2
+                    )
+                ),
 
+            bonusPoints:
+                this.bonusPoints,
+
+            totalPoints:
+                Number(
+                    (
+                        this.standardPoints +
+                        this.bonusPoints
+                    ).toFixed(2)
+                ),
+
+            answers:
+                this.userAnswers
+        };
+    }
 }
