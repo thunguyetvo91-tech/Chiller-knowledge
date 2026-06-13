@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chiller Knowledge - Learning Program</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div id="app">
+        <!-- Welcome Screen -->
+        <div id="welcomeScreen" class="screen active">
+            <div class="welcome-container">
+                <h1>❄️ Chiller Knowledge</h1>
+                <div class="rules-section">
+                    <h2>Game Rules</h2>
+                    <ul>
+                        <li>✓ Choose any knowledge group to start</li>
+                        <li>✓ 10 seconds to answer each question</li>
+                        <li>✓ 10 points for correct answers</li>
+                        <li>✓ Bonus points if answered < 5 seconds</li>
+                        <li>✗ Cannot turn back</li>
+                        <li>✓ Questions shuffle each time</li>
+                    </ul>
+                </div>
+                <input type="text" id="playerName" placeholder="Enter your name" maxlength="50">
+                <button onclick="app.startGame()" class="btn-primary">Start Quiz</button>
+                <div id="leaderboardPreview"></div>
+            </div>
+        </div>
+
+        <!-- Category Screen -->
+        <div id="categoryScreen" class="screen">
+            <div class="category-container">
+                <h2>Select a Knowledge Group</h2>
+                <div id="categoryGrid" class="category-grid"></div>
+            </div>
+        </div>
+
+        <!-- Quiz Screen -->
+        <div id="quizScreen" class="screen">
+            <div class="quiz-header">
+                <div><p class="score-label">Standard</p><p class="score-value" id="standardPoints">0</p></div>
+                <div class="quiz-progress"><p id="questionCounter">Q 1/10</p><div class="progress-bar"><div id="progressFill"></div></div></div>
+                <div><p class="score-label">Bonus</p><p class="score-value bonus" id="bonusPoints">0</p></div>
+            </div>
+            <div class="quiz-content">
+                <div id="timerDisplay" class="timer">10</div>
+                <h3 id="questionText"></h3>
+                <div id="answerOptions"></div>
+            </div>
+            <button id="exitBtn" onclick="app.showExitConfirm()" class="btn-exit">Exit</button>
+        </div>
+
+        <!-- Results Screen -->
+        <div id="resultsScreen" class="screen">
+            <div class="results-container">
+                <h2>Quiz Complete! 🎉</h2>
+                <div class="stats">
+                    <div><p>Correct</p><p id="totalCorrect">0/10</p></div>
+                    <div><p>Achievement</p><p id="achievementPercentage">0%</p></div>
+                    <div><p>Total Points</p><p id="totalPoints">0</p></div>
+                </div>
+                <p>Standard: <span id="resultStandard">0</span> | Bonus: <span id="resultBonus">0</span></p>
+                <button onclick="app.showWelcome()" class="btn-primary">Play Again</button>
+                <button onclick="app.viewLeaderboard()" class="btn-secondary">Leaderboard</button>
+            </div>
+        </div>
+
+        <!-- Leaderboard Screen -->
+        <div id="leaderboardScreen" class="screen">
+            <div class="leaderboard-container">
+                <h2>🏆 Leaderboard</h2>
+                <table><thead><tr><th>Rank</th><th>Player</th><th>Points</th><th>%</th></tr></thead><tbody id="leaderboardBody"></tbody></table>
+                <button onclick="app.showWelcome()" class="btn-primary">Back</button>
+            </div>
+        </div>
+
+        <!-- Exit Modal -->
+        <div id="exitModal" class="modal hidden">
+            <div class="modal-content">
+                <h3>Exit Quiz?</h3>
+                <p>Your score will be saved.</p>
+                <button onclick="app.closeExitModal()" class="btn-secondary">Continue</button>
+                <button onclick="app.exitQuiz()" class="btn-primary">Exit & Save</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/utils.js"></script>
+    <script src="js/leaderboard.js"></script>
+    <script src="js/quiz.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>
