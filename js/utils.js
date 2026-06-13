@@ -152,6 +152,6 @@ static calculateAchievementPercentage(
         ) * 100
     );
 }
-```
+
 
 }
