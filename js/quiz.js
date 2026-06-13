@@ -1,6 +1,6 @@
 class Quiz {
 
-```
+
 constructor() {
 
     this.currentQuestionIndex = 0;
