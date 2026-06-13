@@ -5,7 +5,7 @@ Interactive quiz application for testing knowledge about chiller systems and HVA
 ## Features
 
 ✅ **Multiple Knowledge Groups** - 4 categories with 5 questions each  
-✅ **10-Second Timed Questions** - Challenge yourself to think fast  
+✅ **15-Second Timed Questions** - Challenge yourself to think fast  
 ✅ **Smart Scoring** - 10 pts per correct + bonus for speed (< 5s)  
 ✅ **Randomized Questions** - Order and answers change each play  
 ✅ **Global Leaderboard** - Compete with other players  
