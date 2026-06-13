@@ -1,6 +1,6 @@
 class Utils {
 
-```
+
 static shuffleArray(array) {
 
     const shuffled =
