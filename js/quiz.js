@@ -353,6 +353,6 @@ getResults() {
             this.userAnswers
     };
 }
-```
+
 
 }
