@@ -17,7 +17,7 @@
                     <ul>
                         <li>✓ Choose any knowledge group to start</li>
                         <li>✓ Single or mutiple choice allowed </li>
-                        <li>✓ 10 seconds to answer each question</li>
+                        <li>✓ 15 seconds to answer each question</li>
                         <li>✓ 10 points for correct answers</li>
                         <li>✓ Bonus points if answered < 5 seconds</li>
                         <li>✗ Cannot turn back</li>
@@ -42,11 +42,11 @@
         <div id="quizScreen" class="screen">
             <div class="quiz-header">
                 <div><p class="score-label">Standard</p><p class="score-value" id="standardPoints">0</p></div>
-                <div class="quiz-progress"><p id="questionCounter">Q 1/10</p><div class="progress-bar"><div id="progressFill"></div></div></div>
+                <div class="quiz-progress"><p id="questionCounter">Q 1/15</p><div class="progress-bar"><div id="progressFill"></div></div></div>
                 <div><p class="score-label">Bonus</p><p class="score-value bonus" id="bonusPoints">0</p></div>
             </div>
             <div class="quiz-content">
-                <div id="timerDisplay" class="timer">10</div>
+                <div id="timerDisplay" class="timer">15</div>
                 <h3 id="questionText"></h3>
                 <div id="answerOptions"></div>
             </div>
@@ -58,7 +58,7 @@
             <div class="results-container">
                 <h2>Quiz Complete! 🎉</h2>
                 <div class="stats">
-                    <div><p>Correct</p><p id="totalCorrect">0/10</p></div>
+                    <div><p>Correct</p><p id="totalCorrect">0/15</p></div>
                     <div><p>Achievement</p><p id="achievementPercentage">0%</p></div>
                     <div><p>Total Points</p><p id="totalPoints">0</p></div>
                 </div>
