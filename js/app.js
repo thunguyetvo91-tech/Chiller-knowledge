@@ -514,35 +514,53 @@ class App {
 
     async saveResults(results){
 
-        Utils.saveScore({
+    const score = {
 
-            playerName:
-                this.playerName,
+        playerName:
+            this.playerName,
 
-            totalPoints:
-                results.totalPoints,
+        totalPoints:
+            results.totalPoints,
 
-            standardPoints:
-                results.standardPoints,
+        standardPoints:
+            results.standardPoints,
 
-            bonusPoints:
-                results.bonusPoints,
+        bonusPoints:
+            results.bonusPoints,
 
-            correctCount:
-                results.correctCount,
+        correctCount:
+            results.correctCount,
 
-            achievementPercentage:
-                results.achievementPercentage,
+        achievementPercentage:
+            results.achievementPercentage,
 
-            timestamp:
-                new Date()
-                    .toISOString()
-        });
+        timestamp:
+            new Date()
+                .toISOString()
+    };
 
-        this.displayResults(
-            results
+    try{
+
+        await window.FirebaseDB.saveScore(
+            score
+        );
+
+        console.log(
+            "Score saved to Firestore"
+        );
+
+    }catch(error){
+
+        console.error(
+            "Firestore save failed",
+            error
         );
     }
+
+    this.displayResults(
+        results
+    );
+}
 
     displayResults(results) {
 
