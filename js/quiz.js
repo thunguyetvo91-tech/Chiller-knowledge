@@ -1,155 +1,181 @@
 class Quiz {
 
-    constructor() {
+```
+constructor() {
 
-        this.currentQuestionIndex = 0;
-        this.questions = [];
-        this.userAnswers = [];
+    this.currentQuestionIndex = 0;
+    this.questions = [];
+    this.userAnswers = [];
 
-        this.standardPoints = 0;
-        this.bonusPoints = 0;
+    this.standardPoints = 0;
+    this.bonusPoints = 0;
 
-        this.timePerQuestion = 15;
-        this.timeRemaining = this.timePerQuestion;
+    this.timePerQuestion = 15;
+    this.timeRemaining = this.timePerQuestion;
 
-        this.timerInterval = null;
-    }
+    this.timerInterval = null;
+}
 
-    loadQuestions(categoryId, data) {
+loadQuestions(categoryId, data) {
 
-        const category = data.categories.find(
+    const category =
+        data.categories.find(
             c => c.id === categoryId
         );
 
-        if (!category) return false;
+    if (!category) return false;
 
-        this.questions = Utils.getRandomQuestions(
+    this.questions =
+        Utils.getRandomQuestions(
             category.questions,
-            15
+            10
         );
 
-        this.questions.forEach(question => {
+    this.questions.forEach(
+        question => {
+
             question.answers =
-                Utils.shuffleArray(question.answers);
-        });
+                Utils.shuffleArray(
+                    question.answers
+                );
+        }
+    );
 
-        this.currentCategory = category.name;
+    this.currentCategory =
+        category.name;
 
-        this.userAnswers =
-            new Array(this.questions.length).fill(null);
+    this.userAnswers =
+        new Array(
+            this.questions.length
+        ).fill(null);
 
-        return true;
-    }
+    return true;
+}
 
-    getCurrentQuestion() {
-        return this.questions[this.currentQuestionIndex];
-    }
+getCurrentQuestion() {
 
-    getBonusPoints() {
+    return this.questions[
+        this.currentQuestionIndex
+    ];
+}
 
-        if (this.timeRemaining >= 14) return 5;
-        if (this.timeRemaining === 13) return 4;
-        if (this.timeRemaining === 12) return 3;
-        if (this.timeRemaining === 11) return 2;
-        if (this.timeRemaining === 10) return 1;
+submitAnswer(selectedAnswers) {
 
-        return 0;
-    }
+    const question =
+        this.getCurrentQuestion();
 
-    submitAnswer(selectedAnswers) {
+    const result =
+        this.checkAnswer(
+            question,
+            selectedAnswers
+        );
 
-        const question =
-            this.getCurrentQuestion();
+    const timeSpent =
+        this.timePerQuestion -
+        this.timeRemaining;
 
-        const result =
-            this.checkAnswer(
-                question,
-                selectedAnswers
+    let bonus = 0;
+
+    if (result.isPerfect) {
+
+        bonus =
+            Utils.generateBonusPoints(
+                this.timeRemaining
             );
 
-        const timeSpent =
-            this.timePerQuestion -
-            this.timeRemaining;
-
-        let bonus = 0;
-
-        if (result.isPerfect) {
-
-            bonus =
-                this.getBonusPoints();
-
-            this.bonusPoints += bonus;
-        }
-
-        this.standardPoints += result.points;
-
-        this.userAnswers[
-            this.currentQuestionIndex
-        ] = {
-
-            questionId: question.id,
-
-            selected: selectedAnswers,
-
-            correct: result.isPerfect,
-
-            points: result.points,
-
-            timeSpent,
-
-            bonus
-        };
-
-        return result.isPerfect;
+        this.bonusPoints += bonus;
     }
 
-    checkAnswer(question, selectedAnswers) {
+    this.standardPoints +=
+        result.points;
 
-        // SINGLE CHOICE
-        if (question.type === "single") {
+    this.userAnswers[
+        this.currentQuestionIndex
+    ] = {
 
-            const answer =
-                question.answers[
-                    selectedAnswers[0]
-                ];
+        questionId:
+            question.id,
 
-            const isCorrect =
-                answer &&
-                answer.correct;
+        selected:
+            selectedAnswers,
 
-            return {
-                isPerfect: isCorrect,
-                points: isCorrect ? 10 : 0
-            };
-        }
+        correct:
+            result.isPerfect,
 
-        // MULTIPLE CHOICE
-        if (question.type === "multiple") {
+        points:
+            result.points,
 
-            const correctIndexes =
-                question.answers
-                    .map(
-                        (answer, index) =>
-                            answer.correct
-                                ? index
-                                : -1
-                    )
-                    .filter(
-                        index =>
-                            index !== -1
-                    );
+        timeSpent,
 
-            const totalCorrect =
-                correctIndexes.length;
+        bonus
+    };
 
-            let correctSelected = 0;
-            let wrongSelected = 0;
+    return result.isPerfect;
+}
 
-            selectedAnswers.forEach(index => {
+checkAnswer(
+    question,
+    selectedAnswers
+) {
+
+    if (
+        question.type === "single"
+    ) {
+
+        const answer =
+            question.answers[
+                selectedAnswers[0]
+            ];
+
+        const isCorrect =
+            answer &&
+            answer.correct;
+
+        return {
+
+            isPerfect:
+                isCorrect,
+
+            points:
+                isCorrect
+                    ? 10
+                    : 0
+        };
+    }
+
+    if (
+        question.type === "multiple"
+    ) {
+
+        const correctIndexes =
+            question.answers
+                .map(
+                    (
+                        answer,
+                        index
+                    ) =>
+                        answer.correct
+                            ? index
+                            : -1
+                )
+                .filter(
+                    index =>
+                        index !== -1
+                );
+
+        const totalCorrect =
+            correctIndexes.length;
+
+        let correctSelected = 0;
+        let wrongSelected = 0;
+
+        selectedAnswers.forEach(
+            index => {
 
                 if (
-                    question.answers[index]
-                        ?.correct
+                    question.answers[
+                        index
+                    ]?.correct
                 ) {
 
                     correctSelected++;
@@ -158,163 +184,175 @@ class Quiz {
 
                     wrongSelected++;
                 }
-            });
+            }
+        );
 
-            let points =
+        let points =
+            (
                 (
-                    (
-                        correctSelected -
-                        wrongSelected
-                    ) /
-                    totalCorrect
-                ) * 10;
+                    correctSelected -
+                    wrongSelected
+                ) /
+                totalCorrect
+            ) * 10;
 
-            points =
-                Math.max(0, points);
-
-            points =
-                Number(
-                    points.toFixed(2)
-                );
-
-            const isPerfect =
-
-                selectedAnswers.length ===
-                totalCorrect &&
-
-                selectedAnswers.every(
-                    index =>
-                        correctIndexes.includes(
-                            index
-                        )
-                );
-
-            return {
-                isPerfect,
+        points =
+            Math.max(
+                0,
                 points
-            };
-        }
+            );
+
+        points =
+            Number(
+                points.toFixed(2)
+            );
+
+        const isPerfect =
+
+            selectedAnswers.length ===
+            totalCorrect &&
+
+            selectedAnswers.every(
+                index =>
+                    correctIndexes.includes(
+                        index
+                    )
+            );
 
         return {
-            isPerfect: false,
-            points: 0
+
+            isPerfect,
+
+            points
         };
     }
 
-    nextQuestion() {
+    return {
 
-        if (
-            this.currentQuestionIndex <
-            this.questions.length - 1
-        ) {
+        isPerfect: false,
 
-            this.currentQuestionIndex++;
+        points: 0
+    };
+}
 
-            this.timeRemaining =
-                this.timePerQuestion;
+nextQuestion() {
 
-            return true;
-        }
-
-        this.currentQuestionIndex++;
-
-        return false;
-    }
-
-    startTimer(
-        updateCallback,
-        timeoutCallback
+    if (
+        this.currentQuestionIndex <
+        this.questions.length - 1
     ) {
 
-        this.stopTimer();
+        this.currentQuestionIndex++;
 
         this.timeRemaining =
             this.timePerQuestion;
 
-        updateCallback(
-            this.timeRemaining
-        );
-
-        this.timerInterval =
-            setInterval(() => {
-
-                this.timeRemaining--;
-
-                updateCallback(
-                    this.timeRemaining
-                );
-
-                if (
-                    this.timeRemaining <= 0
-                ) {
-
-                    this.stopTimer();
-
-                    timeoutCallback();
-                }
-
-            }, 1000);
+        return true;
     }
 
-    stopTimer() {
+    this.currentQuestionIndex++;
 
-        if (
-            this.timerInterval
-        ) {
+    return false;
+}
 
-            clearInterval(
-                this.timerInterval
+startTimer(
+    updateCallback,
+    timeoutCallback
+) {
+
+    this.stopTimer();
+
+    this.timeRemaining =
+        this.timePerQuestion;
+
+    updateCallback(
+        this.timeRemaining
+    );
+
+    this.timerInterval =
+        setInterval(() => {
+
+            this.timeRemaining--;
+
+            updateCallback(
+                this.timeRemaining
             );
 
-            this.timerInterval = null;
-        }
+            if (
+                this.timeRemaining <= 0
+            ) {
+
+                this.stopTimer();
+
+                timeoutCallback();
+            }
+
+        }, 1000);
+}
+
+stopTimer() {
+
+    if (
+        this.timerInterval
+    ) {
+
+        clearInterval(
+            this.timerInterval
+        );
+
+        this.timerInterval = null;
     }
+}
 
-    getCorrectCount() {
+getCorrectCount() {
 
-        return this.userAnswers.filter(
-            answer =>
-                answer &&
-                answer.correct
-        ).length;
-    }
+    return this.userAnswers.filter(
+        answer =>
+            answer &&
+            answer.correct
+    ).length;
+}
 
-    getResults() {
+getResults() {
 
-        const correctCount =
-            this.getCorrectCount();
+    const correctCount =
+        this.getCorrectCount();
 
-        return {
+    return {
 
-            correctCount,
+        correctCount,
 
-            totalQuestions:
-                this.questions.length,
+        totalQuestions:
+            this.questions.length,
 
-            achievementPercentage:
-                Utils.calculateAchievementPercentage(
-                    correctCount,
-                    this.questions.length
-                ),
+        achievementPercentage:
+            Utils.calculateAchievementPercentage(
+                correctCount,
+                this.questions.length
+            ),
 
-            standardPoints:
-                Number(
-                    this.standardPoints.toFixed(2)
-                ),
+        standardPoints:
+            Number(
+                this.standardPoints.toFixed(
+                    2
+                )
+            ),
 
-            bonusPoints:
-                this.bonusPoints,
+        bonusPoints:
+            this.bonusPoints,
 
-            totalPoints:
-                Number(
-                    (
-                        this.standardPoints +
-                        this.bonusPoints
-                    ).toFixed(2)
-                ),
+        totalPoints:
+            Number(
+                (
+                    this.standardPoints +
+                    this.bonusPoints
+                ).toFixed(2)
+            ),
 
-            answers:
-                this.userAnswers
-        };
-    }
+        answers:
+            this.userAnswers
+    };
+}
+```
+
 }
