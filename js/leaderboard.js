@@ -1,1 +1,97 @@
-class Leaderboard{static displayLeaderboard(e){const t=Utils.getTopScores(20),r=document.getElementById(e);if(0===t.length){r.innerHTML='<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">No scores yet. Be first!</td></tr>';return}r.innerHTML=t.map((e,t)=>`<tr><td>${1===t+1?"🥇":2===t+1?"🥈":3===t+1?"🥉":"•"} ${t+1}</td><td>${this.escapeHtml(e.playerName)}</td><td>${e.totalPoints}</td><td>${e.achievementPercentage}%</td></tr>`).join("")}static displayLeaderboardPreview(e){const t=Utils.getTopScores(5),r=document.getElementById(e);if(0===t.length){r.innerHTML='<div style="color:#999;">No scores yet</div>';return}r.innerHTML=t.map((e,t)=>`<div style="display:flex;justify-content:space-between;padding:5px 0;"><span>${0===t?"🥇":1===t?"🥈":2===t?"🥉":"•"} ${t+1}. ${this.escapeHtml(e.playerName)}</span><span>${e.totalPoints} pts</span></div>`).join("")}static escapeHtml(e){const t=document.createElement("div");return t.textContent=e,t.innerHTML}}
+class Leaderboard {
+
+    static async displayLeaderboard(elementId) {
+
+        const scores =
+            await window.FirebaseDB.getTopScores(20);
+
+        const tableBody =
+            document.getElementById(elementId);
+
+        if (!scores.length) {
+
+            tableBody.innerHTML =
+                '<tr><td colspan="4" style="text-align:center;padding:20px;color:#999;">No scores yet. Be first!</td></tr>';
+
+            return;
+        }
+
+        tableBody.innerHTML =
+            scores.map((score, index) => `
+
+                <tr>
+                    <td>
+                        ${
+                            index === 0 ? "🥇" :
+                            index === 1 ? "🥈" :
+                            index === 2 ? "🥉" : "•"
+                        }
+                        ${index + 1}
+                    </td>
+
+                    <td>
+                        ${this.escapeHtml(score.playerName)}
+                    </td>
+
+                    <td>
+                        ${score.totalPoints}
+                    </td>
+
+                    <td>
+                        ${score.achievementPercentage}%
+                    </td>
+                </tr>
+
+            `).join("");
+    }
+
+    static async displayLeaderboardPreview(elementId) {
+
+        const scores =
+            await window.FirebaseDB.getTopScores(5);
+
+        const container =
+            document.getElementById(elementId);
+
+        if (!scores.length) {
+
+            container.innerHTML =
+                '<div style="color:#999;">No scores yet</div>';
+
+            return;
+        }
+
+        container.innerHTML =
+            scores.map((score, index) => `
+
+                <div style="display:flex;justify-content:space-between;padding:5px 0;">
+
+                    <span>
+                        ${
+                            index === 0 ? "🥇" :
+                            index === 1 ? "🥈" :
+                            index === 2 ? "🥉" : "•"
+                        }
+                        ${index + 1}.
+                        ${this.escapeHtml(score.playerName)}
+                    </span>
+
+                    <span>
+                        ${score.totalPoints} pts
+                    </span>
+
+                </div>
+
+            `).join("");
+    }
+
+    static escapeHtml(text) {
+
+        const div =
+            document.createElement("div");
+
+        div.textContent = text;
+
+        return div.innerHTML;
+    }
+}
