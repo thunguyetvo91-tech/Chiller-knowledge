@@ -672,11 +672,11 @@ class App {
 
 document.addEventListener(
     "DOMContentLoaded",
-    () => {
+    async () => {
 
         window.app =
             new App();
 
-        app.init();
+       await  window.app.init();
     }
 );
