@@ -58,9 +58,9 @@ class App {
             .classList.add("active");
     }
 
-    showWelcome() {
+    async showWelcome() {
 
-        Leaderboard
+        await Leaderboard
             .displayLeaderboardPreview(
                 "leaderboardPreview"
             );
@@ -658,9 +658,9 @@ class App {
         this.showCategories();
     }
 
-    viewLeaderboard() {
+    async viewLeaderboard() {
 
-        Leaderboard.displayLeaderboard(
+        async Leaderboard.displayLeaderboard(
             "leaderboardBody"
         );
 
