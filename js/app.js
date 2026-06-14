@@ -660,7 +660,7 @@ class App {
 
     async viewLeaderboard() {
 
-        async Leaderboard.displayLeaderboard(
+        await Leaderboard.displayLeaderboard(
             "leaderboardBody"
         );
 
